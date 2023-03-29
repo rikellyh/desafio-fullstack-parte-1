@@ -1,21 +1,22 @@
 import { Router } from 'express';
-import { createClientController } from '../controllers/userController';
+import {
+  createClientController,
+  updateClientController,
+} from '../controllers/userController';
+import ensureAuthMiddleware from '../middlewares/ensureAuthMiddleware';
+import ensureDataIsValidMiddleware from '../middlewares/ensureDataIsValidMiddleware';
+import { clientSerializer } from '../serializers/client.serializers';
 
 const clientRoutes = Router();
 
 //cadastro
-clientRoutes.post('', createClientController);
+clientRoutes.post(
+  '',
+  ensureDataIsValidMiddleware(clientSerializer),
+  createClientController
+);
 
-//listar contatos
-clientRoutes.get('');
-
-//filtrar contato específico
-clientRoutes.get('/:id');
-
-//alterar contato e alterar a si mesmo
-clientRoutes.patch('/:id');
-
-//apenas deletar contato
-clientRoutes.delete('/:id');
+//alterar a si mesmo
+clientRoutes.patch('/:id', ensureAuthMiddleware, updateClientController);
 
 export default clientRoutes;

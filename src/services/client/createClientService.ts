@@ -5,6 +5,7 @@ import { AppDataSource } from '../../data-source';
 import { Client } from '../../entities/client.entity';
 import { IClientRequest } from '../../interfaces/clients/index';
 import { clientWithoutPasswordSerializer } from '../../serializers/client.serializers';
+import { AppError } from '../../errors/App.error';
 
 const createClientService = async ({
   email,
@@ -13,6 +14,18 @@ const createClientService = async ({
   phone_number,
 }: IClientRequest) => {
   const clientRepository = AppDataSource.getRepository(Client);
+
+  const emailExists = await clientRepository.findOneBy({ email });
+
+  if (emailExists) {
+    throw new AppError('Email already exists', 400);
+  }
+
+  const phoneExists = await clientRepository.findOneBy({ phone_number });
+
+  if (phoneExists) {
+    throw new AppError('Phone Number already exists', 400);
+  }
 
   const client = new Client();
   client.name = name;
@@ -24,14 +37,14 @@ const createClientService = async ({
 
   await clientRepository.save(createdClient);
 
-  const clientWithoutPassord = await clientWithoutPasswordSerializer.validate(
+  const responseCreateClient = await clientWithoutPasswordSerializer.validate(
     createdClient,
     {
       stripUnknown: true,
     }
   );
 
-  return clientWithoutPassord;
+  return responseCreateClient;
 };
 
 export default createClientService;
