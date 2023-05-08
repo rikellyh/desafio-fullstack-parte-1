@@ -4,7 +4,13 @@
 As tecnologias usadas foram Node (Express e TypeORM)
 
 - Como iniciar o projeto?
-`yarn install`
+`yarn install` ou apenas `yarn`
+
+- Para as migrações:
+  <br>
+  1- `yarn typeorm migration:generate src/migrations/initial -d src/data-source.ts`
+  <br>
+  2- `yarn typeorm migration:run -d src/data-source.ts`
 
 - Como rodar a aplicação?
 `yarn dev`
